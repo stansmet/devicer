@@ -1,11 +1,12 @@
 'use strict';
 
-angular.module('App', []).
+angular.module('App', ['ui']).
   config(['$routeProvider', function($routeProvider) {
   $routeProvider.
       //when('/', {controller: LocationsListCtrl}).
       when('/devices/:locationId', {templateUrl: 'partials/devicesList.html', controller: DevicesListCtrl})
       //otherwise({redirectTo: '/'});
+      //$locationProvider.html5Mode(true);
 }]);
 
 // Declare app level module which depends on filters, and services

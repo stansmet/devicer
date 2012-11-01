@@ -33,24 +33,19 @@ var locations = [
 /* Controllers */
 function LocationsListCtrl($scope)
 {
-	var self = this;
-	var selectedIdx = 0;
+	$scope.selectedIdx = 0;
 
-	self.toggleActive = function(idx) {
-		console.log('toggle');
-
-		if (idx === self.selectedIdx) {
-			self.selectedIdx = 0;
+	$scope.toggleActive = function(idx) {
+		if (idx === $scope.selectedIdx) {
+			$scope.selectedIdx = 0;
 		} else {
-			self.selectedIdx = idx;
+			$scope.selectedIdx = idx;
 		}
 	}
 
-	self.getClass = function(idx) {
-		console.log('get class');
+	$scope.getClass = function(idx) {
 		var cls = '';
-
-		if (idx === self.selectedIdx) {
+		if (idx === $scope.selectedIdx) {
 			cls = 'active';
 		} 
 
@@ -58,6 +53,7 @@ function LocationsListCtrl($scope)
 	}
 
 	$scope.locations = locations;
+	$scope.devices = locations[0].devices;
 }
 
 function DevicesListCtrl($scope, $routeParams)
