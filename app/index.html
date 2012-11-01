@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en" ng-app>
+<head>
+  <meta charset="utf-8">
+  <title>Devicer</title>
+  <link rel="stylesheet" href="css/app.css"/>
+</head>
+<body ng-controller="DeviceListCtrl">
+  <ul class="menu" ng-repeat="location in locations">
+    <li><a href="#">{{location.title}}</a></li>
+  </ul>
+
+  <!--<div ng-view></div>-->
+
+
+  <!-- In production use:
+  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min.js"></script>
+  -->
+  <script src="lib/angular/angular.js"></script>
+  <!--<script src="js/app.js"></script>
+  <script src="js/services.js"></script>-->
+  <script src="js/controllers.js"></script>
+  <!--<script src="js/filters.js"></script>
+  <script src="js/directives.js"></script>-->
+</body>
+</html>
