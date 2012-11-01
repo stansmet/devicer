@@ -1,5 +1,5 @@
 <ul class="nav nav-list">	
 	<li class="nav-header">Оборудование ({{devices.length}})</li>
 	<li ng-repeat="device in devices"><a href="#">{{device.title}} ({{device.num}})</a></li>
-	<li><button class="btn btn-success" type="button">Добавить оборудование</button></li>
+	<li><button class="btn btn-success" type="button" ng-click="addDevice=true">Добавить оборудование</button></li>
 </ul>
