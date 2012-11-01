@@ -21,8 +21,7 @@
   <div class="row span12 tabbable tabs-left">
     <ul class="locationMenu nav nav-tabs" ng-controller="LocationsListCtrl">
       <li class="nav-header">Локация ({{locations.length}})</li>
-      <li class="active"><a href="#">Огни (Аврора парк)</a></li>
-      <li ng-repeat="location in locations"><a href="#/devices/{{location.id}}">{{location.title}} ({{location.address}})</a></li>
+      <li ng-repeat="location in locations" ng-class="getClass($index)"><a href="#/devices/{{location.id}}" ng-click="toggleActive($index)">{{location.title}} ({{location.address}})</a></li>
     </ul>
 
     <div><strong>Фильтр: </strong><em>{{query}}</em></div>
@@ -32,7 +31,7 @@
   <div class="footer row span12">&copy; 2012</div>
 
 
-  <script src="lib/angular/angular.min.js"></script>
+  <script src="lib/angular/angular.min.js" ng:autobind></script>
   <script src="js/app.js"></script>
   <script src="js/services.js"></script>
   <script src="js/controllers.js"></script>
