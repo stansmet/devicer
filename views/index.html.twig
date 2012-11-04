@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Devicer</title>
+  <link rel="stylesheet" href="css/app.css" />
+  <link rel="stylesheet" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/start/jquery-ui.css" />
+  <!--<link rel="stylesheet" href="css/bootstrap-responsive.min.css" />-->
+
+  <script src="js/lib/jquery/jquery-1.8.2.min.js"></script>
+  <script src="js/lib/jquery/jquery-ui.min.js"></script>
+  <script src="js/lib/bootstrap/bootstrap.min.js"></script>
+  <script src="js/app/devicer.js"></script>
+</head>
+<body class="container">
+
+  <div class="header span12 row page-header">
+    <h1 class="pull-left">Учет оборудования</h1>
+    <form class="form-search pull-right">
+      <span class="icon-search"></span>
+      <input type="search" class="input-medium search-query">
+    </form>
+  </div>
+
+  <div class="row span12 tabbable tabs-left">    
+    <ul class="nav nav-tabs locations">
+      <li class="nav-header">Локация (<span class="count">0</span>)</li>      
+      <li><button class="btn btn-info" type="button">Добавить локацию</button></li>
+    </ul>
+    
+    <div class="tab-content">
+      <ul class="nav nav-list devices"> 
+        <li class="nav-header">Оборудование (<span class="count">0</span>)</li>
+        <li><button class="btn btn-info" type="button">Добавить оборудование</button></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer row span12">&copy; 2012</div>
+
+  <div class="popup addLocation hide">
+    <form action="/location" method="POST">
+      <input type="text" name="title" required placeholder="название" />
+      <label>Адрес: <input type="text" name="address" placeholder="адрес" /></label>
+      <button class="btn btn-success" type="submit">Добавить</button>
+    </form>
+  </div>
+
+  <div class="popup addDevice hide">
+    <form action="/device" method="POST">
+      <input type="text" name="title" required placeholder="название" />
+      <input type="text" name="num" / placeholder="номер" />
+      <button class="btn btn-success" type="submit">Добавить</button>
+    </form>
+  </div>
+
+</body>
+</html>
