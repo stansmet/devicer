@@ -13,6 +13,10 @@
   <script src="js/lib/jquery/jquery-ui.min.js"></script>
   <script src="js/lib/bootstrap/bootstrap.min.js"></script>
   <script src="js/app/devicer.js"></script>
+
+  <script type="text/javascript">
+    var locations = {{ locations | raw }};
+  </script>
 </head>
 <body class="container">
 
@@ -50,6 +54,11 @@
 
   <div class="popup addDevice hide">
     <form action="/device" method="POST">
+      <select name="location_id">
+        {% for l in locationsRaw %}
+          <option value="{{ l.id }}">{{ l.title }}</option>
+        {% endfor %}
+      </select>
       <input type="text" name="title" required placeholder="название" />
       <input type="text" name="num" / placeholder="номер" />
       <button class="btn btn-success" type="submit">Добавить</button>

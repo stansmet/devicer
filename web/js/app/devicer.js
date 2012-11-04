@@ -1,4 +1,5 @@
 $(function() {
+    /*
     var locations = [
         {"id":1, "title":"БВИ", "address":"Аврора парк", "devices":[
             { "id":1, "title":"роутер", "num":"123123d" }
@@ -28,6 +29,7 @@ $(function() {
             { "id":2, "title":"монитор", "num":"123556e" }
         ]}
     ];
+    */
 
     var outDevices = function(devices) {        
         $('.devices .count').html(devices.length);
@@ -46,7 +48,6 @@ $(function() {
     // devices
     outDevices(locations[0].devices);
 
-
     $('.locations .location a').click(function(e) {        
         e.preventDefault();
         var id = parseInt($(this).attr('data-id'));
@@ -57,10 +58,11 @@ $(function() {
 
         for (var idx in locations) {
             var location = locations[idx];
-            //console.log(typeof location.id, typeof id);
-            if (location.id === id) {
+
+            if (parseInt(location.id) === id) {
                 //console.log(location);
                 devices = location.devices;
+                //console.log(devices);
                 //console.log(location);
                 break;
             }
@@ -69,6 +71,7 @@ $(function() {
         //console.log($('.devices .device'));
         $('.devices .device').remove();
         //console.log($('.devices .device'));
+        //console.log(devices);
         outDevices(devices);
     });
 
@@ -98,13 +101,5 @@ $(function() {
         e.preventDefault();
         $('.popup.addDevice').dialog("open");
     });
-
-    /*
-    $('.popup.addLocation form').submit(function(e) {
-        e.preventDefault();
-
-        $.post($(this).attr('action'), {})
-    })
-    */
 
 });
