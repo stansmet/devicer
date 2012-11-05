@@ -31,7 +31,7 @@ $(function() {
     ];
     */
 
-    var updateLocations = function(callback = undefined) {
+    var updateLocations = function(callback) {
         $.get('/locations', function(data) {
             locations = data;
 
