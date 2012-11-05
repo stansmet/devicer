@@ -48,6 +48,7 @@ $(function() {
     // devices
     outDevices(locations[0].devices);
 
+    // redraw devices section
     $('.locations .location a').click(function(e) {        
         e.preventDefault();
         var id = parseInt($(this).attr('data-id'));
@@ -60,18 +61,12 @@ $(function() {
             var location = locations[idx];
 
             if (parseInt(location.id) === id) {
-                //console.log(location);
                 devices = location.devices;
-                //console.log(devices);
-                //console.log(location);
                 break;
             }
         }
 
-        //console.log($('.devices .device'));
         $('.devices .device').remove();
-        //console.log($('.devices .device'));
-        //console.log(devices);
         outDevices(devices);
     });
 
@@ -83,7 +78,6 @@ $(function() {
         "resizable":false,
         "title":"Добавить локацию"
     });
-
     $('.popup.addDevice').dialog({
         "autoOpen":false,
         "draggable":false,
@@ -91,15 +85,117 @@ $(function() {
         "resizable":false,
         "title":"Добавить оборудование"
     });
+    $('.popup.editDevice').dialog({
+        "autoOpen":false,
+        "draggable":false,
+        "modal":true,
+        "resizable":false,
+        "title":"Редактировать оборудование"
+    });
 
     $('.locations .btn').click(function(e) {
         e.preventDefault();
         $('.popup.addLocation').dialog("open");
     });
-
     $('.devices .btn').click(function(e) {
         e.preventDefault();
         $('.popup.addDevice').dialog("open");
+    });
+
+
+    // editDevice popup
+    $('.devices .device a').live('click', function(e) {
+        e.preventDefault();
+        var deviceId = $(this).attr('data-id');
+        var device;
+
+        for (var i in locations) {
+            var l = locations[i];
+            for (var j in l.devices) {
+                if (l.devices[j].id === deviceId) {
+                    device = l.devices[j];
+                }
+            }
+        }
+
+        $('.editDevice select[name=location_id] option').each(function(idx, el) {
+            if ($(el).val() === device.location_id) {                
+                $(el).attr('selected', 'selected');
+            } 
+        });
+
+        $(".editDevice input[name=title]").val(device.title);
+        $(".editDevice input[name=num]").val(device.num);
+        $(".editDevice input[name=device_id]").val(device.id);
+
+        $('.popup.editDevice').dialog("open");
+    });
+
+
+    // put device
+    $('.editDevice form').on('submit', function(e) {
+        e.preventDefault();
+        var deviceId = $('.editDevice input[name=device_id]').val();
+        var deviceTitle = $('.editDevice input[name=title]').val();
+        var deviceNum = $('.editDevice input[name=num]').val();
+
+        $.ajax({
+            'url': '/api/v1/devices/'+deviceId,
+            'type': 'POST',
+            'data': $(this).serialize(),
+            'headers': {
+                'X-HTTP-Method-Override':'PUT'
+            }, 'success': function(data) {
+                console.log(data);
+                if (data.success) {
+                    $('.devices .device a').each(function(idx, el) {
+                        if ($(el).attr('data-id') === deviceId) {
+                            $(el).html(deviceTitle + ' (' + deviceNum + ')');
+                        }
+                    });
+                } else {
+                    alert(data.message);
+                }
+
+                $('.popup.editDevice').dialog('close');
+            }
+        });
+    });
+
+
+    // delete device
+    $('.editDevice button[name=delete]').on('click', function(e) {
+        e.preventDefault();
+        var deviceId = $('.editDevice input[name=device_id]').val();
+
+        $.ajax({
+            'url': '/api/v1/devices/'+deviceId,
+            'type': 'POST',
+            'headers': {
+                'X-HTTP-Method-Override':'DELETE'
+            }, 'success': function(data) {
+                console.log(data);
+                if (data.success) {
+                    $('.devices .device a').each(function(idx, el) {
+                        if ($(el).attr('data-id') === deviceId) {
+                            $(el).parent('li.device').remove();
+                        }
+                    });
+                } else {
+                    alert(data.message);
+                }
+
+                $('.popup.editDevice').dialog('close');
+            }
+        });
+    });
+
+    $.ajaxSetup({
+        'dataType': 'json',
+        //'contentType': 'application/json',
+        'error': function(xhr) {
+            alert(xhr.status + ' ' + xhr.statusText);
+        }
     });
 
 });
