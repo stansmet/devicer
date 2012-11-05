@@ -31,11 +31,34 @@ $(function() {
     ];
     */
 
+    var updateLocations = function(callback = undefined) {
+        $.get('/locations', function(data) {
+            locations = data;
+
+            if (callback != undefined) {
+                callback(data);
+            }
+        });
+    }
+
     var outDevices = function(devices) {        
         $('.devices .count').html(devices.length);
+        $('.devices .device').remove();
         $.each(devices, function(idx, d) {
             $('.devices .nav-header').after('<li class="device"><a href="#" data-id="'+d.id+'">'+d.title+' ('+d.num+')</a></li>')
         });
+    }
+
+    var getDevices = function(locationId) {
+        for (var idx in locations) {
+            var location = locations[idx];
+
+            if (parseInt(location.id) === locationId) {
+                return location.devices;
+            }
+        }
+
+        return false;
     }
 
     // locations
@@ -51,25 +74,17 @@ $(function() {
     // redraw devices section
     $('.locations .location a').click(function(e) {        
         e.preventDefault();
-        var id = parseInt($(this).attr('data-id'));
-        var devices = [];
+        currentLocationId = parseInt($(this).attr('data-id'));
 
-        $('.locations li').removeClass('active');
-        $(this).parent('li').addClass('active');
-
-        for (var idx in locations) {
-            var location = locations[idx];
-
-            if (parseInt(location.id) === id) {
-                devices = location.devices;
-                break;
-            }
+        var devices = getDevices(currentLocationId);
+        if (devices === false) {
+            alert('no such location!');
+        } else {
+            $('.locations li').removeClass('active');
+            $(this).parent('li').addClass('active');                        
+            outDevices(devices);
         }
-
-        $('.devices .device').remove();
-        outDevices(devices);
     });
-
 
     $('.popup.addLocation').dialog({
         "autoOpen":false,
@@ -97,11 +112,48 @@ $(function() {
         e.preventDefault();
         $('.popup.addLocation').dialog("open");
     });
+
+
+
+    // create device popup
     $('.devices .btn').click(function(e) {
         e.preventDefault();
+
+        $('.addDevice select[name=location_id] option').each(function(idx, el) {
+            if (parseInt($(el).val()) === currentLocationId) {
+                $(el).attr('selected', 'selected');
+            } 
+        });
+
         $('.popup.addDevice').dialog("open");
     });
 
+    // post device
+    $('.addDevice form').on('submit', function(e) {
+        e.preventDefault();
+        var deviceTitle = $('.editDevice input[name=title]').val();
+        var deviceNum = $('.editDevice input[name=num]').val();
+        var locationId = parseInt($('.editDevice select[name=location_id]').val());
+        var form = this;
+
+        $.ajax({
+            'url': '/api/v1/devices',
+            'type': 'POST',
+            'data': $(this).serialize(),
+            'success': function(data) {
+                if (data.success) {
+                    form.reset();
+                    updateLocations(function() {
+                        outDevices(getDevices(currentLocationId));                        
+                    });
+                } else {
+                    alert(data.message);
+                }
+
+                $('.popup.addDevice').dialog('close');
+            }
+        });
+    });
 
     // editDevice popup
     $('.devices .device a').live('click', function(e) {
@@ -138,6 +190,8 @@ $(function() {
         var deviceId = $('.editDevice input[name=device_id]').val();
         var deviceTitle = $('.editDevice input[name=title]').val();
         var deviceNum = $('.editDevice input[name=num]').val();
+        var locationId = parseInt($('.editDevice select[name=location_id]').val());
+        var form = this;
 
         $.ajax({
             'url': '/api/v1/devices/'+deviceId,
@@ -146,12 +200,10 @@ $(function() {
             'headers': {
                 'X-HTTP-Method-Override':'PUT'
             }, 'success': function(data) {
-                console.log(data);
                 if (data.success) {
-                    $('.devices .device a').each(function(idx, el) {
-                        if ($(el).attr('data-id') === deviceId) {
-                            $(el).html(deviceTitle + ' (' + deviceNum + ')');
-                        }
+                    form.reset();
+                    updateLocations(function() {
+                        outDevices(getDevices(currentLocationId));                        
                     });
                 } else {
                     alert(data.message);
@@ -167,6 +219,7 @@ $(function() {
     $('.editDevice button[name=delete]').on('click', function(e) {
         e.preventDefault();
         var deviceId = $('.editDevice input[name=device_id]').val();
+        var form = this;
 
         $.ajax({
             'url': '/api/v1/devices/'+deviceId,
@@ -174,18 +227,16 @@ $(function() {
             'headers': {
                 'X-HTTP-Method-Override':'DELETE'
             }, 'success': function(data) {
-                console.log(data);
                 if (data.success) {
-                    $('.devices .device a').each(function(idx, el) {
-                        if ($(el).attr('data-id') === deviceId) {
-                            $(el).parent('li.device').remove();
-                        }
+                    form.reset();
+                    updateLocations(function() {
+                        outDevices(getDevices(currentLocationId));                        
                     });
                 } else {
                     alert(data.message);
                 }
 
-                $('.popup.editDevice').dialog('close');
+                $('.popup.editDevice').dialog('close');                
             }
         });
     });

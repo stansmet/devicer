@@ -43,6 +43,18 @@ $app->post('/location', function(Request $request) use($app) {
 });
 
 
+// GET LOCATIONS IN JSON
+$app->get('/locations', function() use ($app) {
+    $locations = array();
+    $sth = $app['dbh']->prepare("SELECT id, title, num, location_id FROM devices WHERE location_id = :location_id");
+    foreach ($app['dbh']->query("SELECT * FROM locations") as $l) {
+        $sth->execute(array(':location_id' => $l['id']));
+        $l['devices'] = $sth->fetchAll(PDO::FETCH_OBJ);
+        $locations[] = $l;
+    }
+
+    return new JsonResponse($locations);
+});
 
 // POST DEVICE
 $app->post('/api/v1/devices', function(Request $request) use($app) {
