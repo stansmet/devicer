@@ -36,10 +36,20 @@ $app->get('/', function() use($app) {
 });
 
 
-$app->post('/location', function(Request $request) use($app) {
+// POST LOCATION
+$app->post('/api/v1/locations', function(Request $request) use($app) {
     $sth = $app['dbh']->prepare("INSERT INTO locations(title, address) VALUES(:title, :address)");
     $sth->execute(array(':title' => $request->get('title'), ':address' => $request->get('address')));
-    return $app->redirect('/');
+
+    $errors = $sth->errorInfo();
+    $status = array(
+        'success' => (int)$errors[0] === 0 ? true : false,
+        'message' => $errors[2],
+        'method' => 'POST',
+        //'data' => (string)$request->getQueryString()
+    );
+    
+    return new JsonResponse($status);
 });
 
 
@@ -66,7 +76,6 @@ $app->post('/api/v1/devices', function(Request $request) use($app) {
     ));
 
     $errors = $sth->errorInfo();
-
     $status = array(
         'success' => (int)$errors[0] === 0 ? true : false,
         'message' => $errors[2],
@@ -99,6 +108,26 @@ $app->put('/api/v1/devices/{id}', function(Request $request, $id) use($app) {
     return new JsonResponse($status);
 });
 
+// PUT LOCATION
+$app->put('/api/v1/locations/{id}', function(Request $request, $id) use($app) {
+    $sth = $app['dbh']->prepare("UPDATE locations SET title = :title, address = :address WHERE id = :id");
+    $sth->execute(array(
+        ':title' => $request->get('title'),
+        ':address' => $request->get('address'),
+        ':id' => $id
+    ));
+
+    $errors = $sth->errorInfo();
+    $status = array(
+        'success' => (int)$errors[0] === 0 ? true : false,
+        'message' => $errors[2],
+        'method' => 'PUT',
+        //'data' => (string)$request->getQueryString()
+    );
+
+    return new JsonResponse($status);
+});
+
 
 // DELETE DEVICE
 $app->delete('/api/v1/devices/{id}', function(Request $request, $id) use($app) {
@@ -118,5 +147,27 @@ $app->delete('/api/v1/devices/{id}', function(Request $request, $id) use($app) {
     return new JsonResponse($status);
 });
 
+
+// DELETE LOCATION
+$app->delete('/api/v1/locations/{id}', function(Request $request, $id) use($app) {
+    $sth = $app['dbh']->prepare("DELETE FROM locations WHERE id = :id");
+    $sth->execute(array(
+        ':id' => $id
+    ));
+
+    $sth = $app['dbh']->prepare("DELETE FROM devices WHERE location_id = :id");
+    $sth->execute(array(
+        ':id' => $id
+    ));
+
+    $errors = $sth->errorInfo();
+    $status = array(
+        'success' => (int)$errors[0] === 0 ? true : false,
+        'message' => $errors[2],
+        'method' => 'DELETE'
+    );
+
+    return new JsonResponse($status);
+});
 
 $app->run();

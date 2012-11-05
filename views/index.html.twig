@@ -46,19 +46,15 @@
   <div class="footer row span12">&copy; 2012</div>
 
   <div class="popup addLocation hide">
-    <form action="/location" method="POST">
+    <form action="" method="POST">
       <input type="text" name="title" required placeholder="название" />
       <label>Адрес: <input type="text" name="address" placeholder="адрес" /></label>
       <button class="btn btn-success" type="submit">Добавить</button>
     </form>
   </div>
   <div class="popup addDevice hide">
-    <form action="/device" method="POST">
-      <select name="location_id">
-        {% for l in locationsRaw %}
-          <option value="{{ l.id }}">{{ l.title }}</option>
-        {% endfor %}
-      </select>
+    <form action="" method="POST">
+      <select name="location_id"></select>
       <input type="text" name="title" required placeholder="название" />
       <input type="text" name="num" / placeholder="номер" />
       <button class="btn btn-success" type="submit">Добавить</button>
@@ -66,11 +62,7 @@
   </div>
   <div class="popup editDevice hide">
     <form action="" method="POST">
-      <select name="location_id">
-        {% for l in locationsRaw %}
-          <option value="{{ l.id }}">{{ l.title }}</option>
-        {% endfor %}
-      </select>
+      <select name="location_id"></select>
       <input type="text" name="title" required placeholder="название" />
       <input type="text" name="num" / placeholder="номер" />
       <input type="hidden" name="device_id" />
@@ -78,7 +70,15 @@
       <button class="btn btn-danger" type="button" name="delete">Удалить</button>
     </form>
   </div>
-
+  <div class="popup editLocation hide">
+    <form action="" method="POST">
+      <input type="text" name="title" required placeholder="название" />
+      <input type="text" name="address" / placeholder="адрес" />
+      <input type="hidden" name="location_id" />
+      <button class="btn btn-success" type="submit" name="save">Сохранить</button>
+      <button class="btn btn-danger" type="button" name="delete">Удалить</button>
+    </form>
+  </div>
 
 </body>
 </html>

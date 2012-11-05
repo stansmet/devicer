@@ -61,18 +61,26 @@ $(function() {
         return false;
     }
 
-    // locations
-    $('.locations .count').html(locations.length);
-    $.each(locations, function(idx, l) {
-        $('.locations li:last').before('<li class="location"><a href="#" data-id="'+l.id+'">'+l.title+' ('+l.address+')</a></li>');        
-    });
-    $('.locations li:eq(1)').addClass('active');
+    var outLocations = function() {
 
-    // devices
+        $('.locations .count').html(locations.length);
+        $('select[name=location_id], .locations .location').empty();
+
+        $.each(locations, function(idx, l) {
+            var activeCls = parseInt(l.id) === currentLocationId ? 'active' : '';
+            $('.locations li:last').before('<li class="location '+activeCls+'"><a href="#"><span class="tab action" data-id="'+l.id+'">'+l.title+' ('+l.address+')</span>&nbsp;&nbsp;<span class="icon-edit pull-right action"></span></a></li>');
+            $('select[name=location_id]').append('<option value="'+l.id+'">'+l.title+' ('+l.address+')</option>');
+        });
+    }
+
+
+    outLocations();
     outDevices(locations[0].devices);
 
+
     // redraw devices section
-    $('.locations .location a').click(function(e) {        
+    $('.locations .location .tab').live('click', function(e) {
+        //console.log('tab click!', this);
         e.preventDefault();
         currentLocationId = parseInt($(this).attr('data-id'));
 
@@ -80,8 +88,8 @@ $(function() {
         if (devices === false) {
             alert('no such location!');
         } else {
-            $('.locations li').removeClass('active');
-            $(this).parent('li').addClass('active');                        
+            $('.locations .location').removeClass('active');
+            $(this).parents('.location').addClass('active');                        
             outDevices(devices);
         }
     });
@@ -92,6 +100,13 @@ $(function() {
         "modal":true,
         "resizable":false,
         "title":"Добавить локацию"
+    });
+    $('.popup.editLocation').dialog({
+        "autoOpen":false,
+        "draggable":false,
+        "modal":true,
+        "resizable":false,
+        "title":"Редактировать локацию"
     });
     $('.popup.addDevice').dialog({
         "autoOpen":false,
@@ -108,9 +123,110 @@ $(function() {
         "title":"Редактировать оборудование"
     });
 
+
+    // create location popup
     $('.locations .btn').click(function(e) {
-        e.preventDefault();
+        e.preventDefault();        
         $('.popup.addLocation').dialog("open");
+    });
+    // post location
+    $('.addLocation form').on('submit', function(e) {
+        e.preventDefault();
+        var title = $('.editDevice input[name=title]').val();
+        var address = $('.editDevice input[name=address]').val();
+        var form = this;
+
+        $.ajax({
+            'url': '/api/v1/locations',
+            'type': 'POST',
+            'data': $(this).serialize(),
+            'success': function(data) {
+                if (data.success) {
+                    form.reset();
+                    updateLocations(function() {
+                        outLocations();
+                        console.log(currentLocationId);
+                    });
+                } else {
+                    alert(data.message);
+                }
+
+                $('.popup.addLocation').dialog('close');
+            }
+        });
+    });
+    // editLocation popup
+    $('.locations .icon-edit').live('click', function(e) {
+        e.preventDefault();
+        var locationId = $(this).siblings('.tab').attr('data-id');
+        var location;
+
+        for (var i in locations) {
+            if (locations[i].id === locationId) {
+                location = locations[i];
+            }
+        }
+
+        $(".editLocation input[name=title]").val(location.title);
+        $(".editLocation input[name=address]").val(location.address);
+        $(".editLocation input[name=location_id]").val(location.id);
+
+        $('.popup.editLocation').dialog("open");
+    });
+    // put location
+    $('.editLocation form').on('submit', function(e) {
+        e.preventDefault();
+        var id = $('.editLocation input[name=location_id]').val();
+        var title = $('.editLocation input[name=title]').val();
+        var address = $('.editLocation input[name=address]').val();
+        var form = this;
+
+        $.ajax({
+            'url': '/api/v1/locations/'+id,
+            'type': 'POST',
+            'data': $(this).serialize(),
+            'headers': {
+                'X-HTTP-Method-Override':'PUT'
+            }, 'success': function(data) {
+                if (data.success) {
+                    form.reset();
+                    updateLocations(function() {                    
+                        outLocations();
+                    });
+                } else {
+                    alert(data.message);
+                }
+
+                $('.popup.editLocation').dialog('close');
+            }
+        });
+    });
+    // delete location
+    $('.editLocation button[name=delete]').on('click', function(e) {
+        e.preventDefault();
+        var locationId = $('.editLocation input[name=location_id]').val();
+        var form = this;
+
+        $.ajax({
+            'url': '/api/v1/locations/'+locationId,
+            'type': 'POST',
+            'headers': {
+                'X-HTTP-Method-Override':'DELETE'
+            }, 'success': function(data) {
+                if (data.success) {
+                    updateLocations(function() {                    
+                        if (currentLocationId === locationId) {
+                            currentLocationId = parseInt(locations[0].id);
+                        }
+                        outLocations();
+                    });
+                } else {
+                    alert(data.message);
+                }
+
+                $('.popup.editLocation').dialog('close');                
+            }
+        });
     });
 
 
@@ -127,7 +243,6 @@ $(function() {
 
         $('.popup.addDevice').dialog("open");
     });
-
     // post device
     $('.addDevice form').on('submit', function(e) {
         e.preventDefault();
@@ -154,7 +269,6 @@ $(function() {
             }
         });
     });
-
     // editDevice popup
     $('.devices .device a').live('click', function(e) {
         e.preventDefault();
@@ -182,8 +296,6 @@ $(function() {
 
         $('.popup.editDevice').dialog("open");
     });
-
-
     // put device
     $('.editDevice form').on('submit', function(e) {
         e.preventDefault();
@@ -213,8 +325,6 @@ $(function() {
             }
         });
     });
-
-
     // delete device
     $('.editDevice button[name=delete]').on('click', function(e) {
         e.preventDefault();
