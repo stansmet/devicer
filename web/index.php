@@ -48,7 +48,7 @@ $app->post('/api/v1/locations', function(Request $request) use($app) {
         'method' => 'POST',
         //'data' => (string)$request->getQueryString()
     );
-    
+
     return new JsonResponse($status);
 });
 

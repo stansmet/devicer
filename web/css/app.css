@@ -4,9 +4,25 @@ body {
   padding-top: 20px;
 }
 
+
+.locations {
+    margin-bottom: 10px;
+}
 .locations .action {
 	cursor: pointer;
 }
 .locations .location a {
     cursor: default;
+}
+.devices {
+    float: left;
+    margin-bottom: 10px;
+}
+.devices .device {
+    width: 200px;
+    float: left;
+    margin-right: 20px;
+}
+.footer {
+    text-align: center;
 }

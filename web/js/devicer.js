@@ -86,7 +86,7 @@ $(function() {
 
         var devices = getDevices(currentLocationId);
         if (devices === false) {
-            alert('no such location!');
+            $.stickr({note:'no such location!', className:'classic error', sticked:true});
         } else {
             $('.locations .location').removeClass('active');
             $(this).parents('.location').addClass('active');                        
@@ -125,15 +125,15 @@ $(function() {
 
 
     // create location popup
-    $('.locations .btn').click(function(e) {
+    $('#addLocationBtn').click(function(e) {
         e.preventDefault();        
         $('.popup.addLocation').dialog("open");
     });
     // post location
     $('.addLocation form').on('submit', function(e) {
         e.preventDefault();
-        var title = $('.editDevice input[name=title]').val();
-        var address = $('.editDevice input[name=address]').val();
+        var title = $('.addLocation input[name=title]').val();
+        var address = $('.addLocation input[name=address]').val();
         var form = this;
 
         $.ajax({
@@ -145,10 +145,10 @@ $(function() {
                     form.reset();
                     updateLocations(function() {
                         outLocations();
-                        console.log(currentLocationId);
+                        $.stickr({note:'Локация '+title+' добавлена', className:'classic'})
                     });
                 } else {
-                    alert(data.message);
+                    $.stickr({note:data.message, className:'classic error', sticked:true});
                 }
 
                 $('.popup.addLocation').dialog('close');
@@ -192,9 +192,10 @@ $(function() {
                     form.reset();
                     updateLocations(function() {                    
                         outLocations();
+                        $.stickr({note:'Локация '+title+' обновлена', className:'classic'});
                     });
                 } else {
-                    alert(data.message);
+                    $.stickr({note:data.message, className:'classic error', sticked:true});
                 }
 
                 $('.popup.editLocation').dialog('close');
@@ -204,6 +205,7 @@ $(function() {
     // delete location
     $('.editLocation button[name=delete]').on('click', function(e) {
         e.preventDefault();
+        var title = $('.editLocation input[name=title]').val();
         var locationId = $('.editLocation input[name=location_id]').val();
         var form = this;
 
@@ -219,9 +221,10 @@ $(function() {
                             currentLocationId = parseInt(locations[0].id);
                         }
                         outLocations();
+                        $.stickr({note:'Локация '+title+' удалена!', className:'classic'})
                     });
                 } else {
-                    alert(data.message);
+                    $.stickr({note:data.message, className:'classic error', sticked:true});
                 }
 
                 $('.popup.editLocation').dialog('close');                
@@ -232,7 +235,7 @@ $(function() {
 
 
     // create device popup
-    $('.devices .btn').click(function(e) {
+    $('#addDeviceBtn').click(function(e) {
         e.preventDefault();
 
         $('.addDevice select[name=location_id] option').each(function(idx, el) {
@@ -246,8 +249,8 @@ $(function() {
     // post device
     $('.addDevice form').on('submit', function(e) {
         e.preventDefault();
-        var deviceTitle = $('.editDevice input[name=title]').val();
-        var deviceNum = $('.editDevice input[name=num]').val();
+        var deviceTitle = $('.addDevice input[name=title]').val();
+        var deviceNum = $('.addDevice input[name=num]').val();
         var locationId = parseInt($('.editDevice select[name=location_id]').val());
         var form = this;
 
@@ -259,10 +262,11 @@ $(function() {
                 if (data.success) {
                     form.reset();
                     updateLocations(function() {
-                        outDevices(getDevices(currentLocationId));                        
+                        outDevices(getDevices(currentLocationId));
+                        $.stickr({note:'Оборудование '+deviceTitle+' добавлено', className:'classic'});
                     });
                 } else {
-                    alert(data.message);
+                    $.stickr({note:data.message, className:'classic error', sticked:true});
                 }
 
                 $('.popup.addDevice').dialog('close');
@@ -315,10 +319,11 @@ $(function() {
                 if (data.success) {
                     form.reset();
                     updateLocations(function() {
-                        outDevices(getDevices(currentLocationId));                        
+                        outDevices(getDevices(currentLocationId));
+                        $.stickr({note:'Оборудование '+deviceTitle+' обновлено',className:'classic'});                       
                     });
                 } else {
-                    alert(data.message);
+                    $.stickr({note:data.message, className:'classic error', sticked:true});
                 }
 
                 $('.popup.editDevice').dialog('close');
@@ -328,8 +333,9 @@ $(function() {
     // delete device
     $('.editDevice button[name=delete]').on('click', function(e) {
         e.preventDefault();
+        var deviceTitle = $('.editDevice input[name=title]').val();
         var deviceId = $('.editDevice input[name=device_id]').val();
-        var form = this;
+        var form = $('.editDevice form').get(0);
 
         $.ajax({
             'url': '/api/v1/devices/'+deviceId,
@@ -340,10 +346,11 @@ $(function() {
                 if (data.success) {
                     form.reset();
                     updateLocations(function() {
-                        outDevices(getDevices(currentLocationId));                        
+                        outDevices(getDevices(currentLocationId));
+                        $.stickr({note:'Оборудование '+deviceTitle+' удалено!', className:'classic'});
                     });
                 } else {
-                    alert(data.message);
+                    $.stickr({note:data.message, className:'classic error', sticked:true});
                 }
 
                 $('.popup.editDevice').dialog('close');                
@@ -355,7 +362,7 @@ $(function() {
         'dataType': 'json',
         //'contentType': 'application/json',
         'error': function(xhr) {
-            alert(xhr.status + ' ' + xhr.statusText);
+            $.stickr({note:xhr.status + ' ' + xhr.statusText, className:'classic error', sticked:true});
         }
     });
 

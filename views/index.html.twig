@@ -4,15 +4,19 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Devicer</title>
-  <link rel="stylesheet" href="css/app.css" />
+  
+  <link rel="stylesheet" href="css/jquery-ui-1.9.1.custom.min.css" />
   <link rel="stylesheet" href="css/bootstrap.min.css" />
-  <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/start/jquery-ui.css" />
+  <!--<link rel="stylesheet" href="css/jquery-ui-1.9.1.custom.min.css" />-->
   <!--<link rel="stylesheet" href="css/bootstrap-responsive.min.css" />-->
+  <link rel="stylesheet" href="css/stickr.css" />
+  <link rel="stylesheet" href="css/app.css" />
 
-  <script src="js/lib/jquery/jquery-1.8.2.min.js"></script>
-  <script src="js/lib/jquery/jquery-ui.min.js"></script>
-  <script src="js/lib/bootstrap/bootstrap.min.js"></script>
-  <script src="js/app/devicer.js"></script>
+  <script src="js/jquery-1.8.2.min.js" type="text/javascript"></script>
+  <script src="js/jquery-ui.min.js" type="text/javascript"></script>
+  <script src="js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="js/jquery.stickr.min.js" type="text/javascript"></script>  
+  <script src="js/devicer.js" type="text/javascript"></script>
 
   <script type="text/javascript">
     var locations = {{ locations | raw }};
@@ -32,14 +36,16 @@
   <div class="row span12 tabbable tabs-left">    
     <ul class="nav nav-tabs locations">
       <li class="nav-header">Локация (<span class="count">0</span>)</li>      
-      <li><button class="btn btn-info" type="button">Добавить локацию</button></li>
+      <li><button class="btn btn-info" type="button" id="addLocationBtn">Добавить локацию</button></li>
     </ul>
     
-    <div class="tab-content">
-      <ul class="nav nav-list devices"> 
-        <li class="nav-header">Оборудование (<span class="count">0</span>)</li>
-        <li><button class="btn btn-info" type="button">Добавить оборудование</button></li>
-      </ul>
+    <div class="tab-content clearfix">
+      <div class="pull-left">
+        <ul class="nav nav-list devices"> 
+          <li class="nav-header">Оборудование (<span class="count">0</span>)</li>
+        </ul>
+        <div class="clearfix"><button class="btn btn-info" type="button" id="addDeviceBtn">Добавить оборудование</button></div>
+      </div>
     </div>
   </div>
 
