@@ -61,8 +61,33 @@ $(function() {
         return false;
     }
 
-    var outLocations = function() {
+    var getDeviceLocation = function(deviceId) {        
+        for (var i in locations) {
+            var location = locations[i];
+            for (var j in location.devices) {
+                var device = location.devices[j];
 
+                if (device.id === deviceId) {
+                    return location;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    var getLocationById = function(locationId) {
+        for (var i in locations) {
+            var location = locations[i];
+            if (parseInt(location.id) === locationId) {
+                return location;
+            }
+        }
+
+        return false;
+    }
+
+    var outLocations = function() {
         $('.locations .count').html(locations.length);
         $('select[name=location_id], .locations .location').empty();
 
@@ -253,6 +278,7 @@ $(function() {
         var deviceNum = $('.addDevice input[name=num]').val();
         var locationId = parseInt($('.editDevice select[name=location_id]').val());
         var form = this;
+        var location = getLocationById(locationId);
 
         $.ajax({
             'url': '/api/v1/devices',
@@ -263,7 +289,7 @@ $(function() {
                     form.reset();
                     updateLocations(function() {
                         outDevices(getDevices(currentLocationId));
-                        $.stickr({note:'Оборудование '+deviceTitle+' добавлено', className:'classic'});
+                        $.stickr({note:'Оборудование '+deviceTitle+' добавлено в '+location.title, className:'classic'});
                     });
                 } else {
                     $.stickr({note:data.message, className:'classic error', sticked:true});
@@ -308,6 +334,8 @@ $(function() {
         var deviceNum = $('.editDevice input[name=num]').val();
         var locationId = parseInt($('.editDevice select[name=location_id]').val());
         var form = this;
+        var location = getLocationById(locationId);
+        var oldLocation = getDeviceLocation(deviceId);
 
         $.ajax({
             'url': '/api/v1/devices/'+deviceId,
@@ -320,7 +348,11 @@ $(function() {
                     form.reset();
                     updateLocations(function() {
                         outDevices(getDevices(currentLocationId));
-                        $.stickr({note:'Оборудование '+deviceTitle+' обновлено',className:'classic'});                       
+                        if (parseInt(oldLocation.id) !== parseInt(locationId)) {
+                            $.stickr({note:'Оборудование '+deviceTitle+' перемещено в '+location.title,className:'classic'});
+                        } else {
+                            $.stickr({note:'Оборудование '+deviceTitle+' обновлено',className:'classic'});
+                        }
                     });
                 } else {
                     $.stickr({note:data.message, className:'classic error', sticked:true});
