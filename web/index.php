@@ -31,7 +31,7 @@ $app->get('/', function() use($app) {
     return $app['twig']->render('index.html.twig', array(
         'locations' => json_encode($locations),
         'locationsRaw' => $locations,
-        'firstLocationId' => $locations[0]['id']
+        'firstLocationId' => $locations[0]['id'] ?: 'undefined'
     ));
 });
 

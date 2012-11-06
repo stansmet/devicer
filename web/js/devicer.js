@@ -98,10 +98,13 @@ $(function() {
         });
     }
 
-
     outLocations();
-    outDevices(locations[0].devices);
-
+    if (locations.length) {
+        outDevices(locations[0].devices);
+    } else {
+        outDevices([]);
+    }
+    
 
     // redraw devices section
     $('.locations .location .tab').live('click', function(e) {
