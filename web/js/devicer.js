@@ -390,6 +390,28 @@ $(function() {
         });
     });
 
+
+    $('.search-query').keyup(function(e) {
+        var q = $(this).val();
+
+        if (q !== '') {
+            $.ajax({
+                'url': '/api/v1/devices?filter='+q,
+                'type': 'GET',
+                'success': function(data) {
+                    if (data.success) {
+                        outDevices(data.data);
+                    } else {
+                        $.stickr({note:data.message, className:'classic error', sticked:true});
+                    }
+                }
+            });
+        } else {
+            var devices = getDevices(currentLocationId);
+            outDevices(devices);
+        }
+    });
+
     $.ajaxSetup({
         'dataType': 'json',
         //'contentType': 'application/json',

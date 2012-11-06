@@ -170,4 +170,22 @@ $app->delete('/api/v1/locations/{id}', function(Request $request, $id) use($app)
     return new JsonResponse($status);
 });
 
+// SEARCH
+$app->get('/api/v1/devices', function(Request $request) use($app) {
+    $filter = addslashes(mb_strtolower($request->get('filter'), 'UTF-8'));
+    $sth = $app['dbh']->prepare("SELECT * FROM devices WHERE title LIKE '%{$filter}%' OR num LIKE '%{$filter}%'");
+    $sth->execute(array());
+
+    $errors = $sth->errorInfo();
+    $status = array(
+        'success' => (int)$errors[0] === 0 ? true : false,
+        'message' => $errors[2],
+        'method' => 'GET',
+        'data' => $sth->fetchAll(PDO::FETCH_ASSOC)
+    );
+
+    return new JsonResponse($status);
+});
+
+
 $app->run();
