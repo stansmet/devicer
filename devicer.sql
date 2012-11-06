@@ -28,7 +28,7 @@ CREATE TABLE `devices` (
   `num` varchar(512) DEFAULT NULL,
   `location_id` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='оборудование';
+) ENGINE=MyISAM AUTO_INCREMENT=92 DEFAULT CHARSET=utf8 COMMENT='оборудование';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -37,7 +37,7 @@ CREATE TABLE `devices` (
 
 LOCK TABLES `devices` WRITE;
 /*!40000 ALTER TABLE `devices` DISABLE KEYS */;
-INSERT INTO `devices` VALUES (1,'asdf','112',1),(2,'asf','asd',3),(3,'asdf','asdfsaf',1),(4,'asdf','asdf',3),(5,'123','123',4),(6,'123','123',2);
+INSERT INTO `devices` VALUES (91,'asdrfasdf','asdf',52);
 /*!40000 ALTER TABLE `devices` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -53,7 +53,7 @@ CREATE TABLE `locations` (
   `title` varchar(512) NOT NULL,
   `address` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8 COMMENT='локации';
+) ENGINE=MyISAM AUTO_INCREMENT=54 DEFAULT CHARSET=utf8 COMMENT='локации';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -62,7 +62,7 @@ CREATE TABLE `locations` (
 
 LOCK TABLES `locations` WRITE;
 /*!40000 ALTER TABLE `locations` DISABLE KEYS */;
-INSERT INTO `locations` VALUES (1,'Огни','Аврора парк'),(2,'БВИ','Аврора парк'),(3,'Кофе7','Красная'),(4,'Maskva','Советская'),(5,'asdf','asdf'),(6,'11','222'),(7,'22','33'),(8,'a','222');
+INSERT INTO `locations` VALUES (52,'БВИ','фыва');
 /*!40000 ALTER TABLE `locations` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -75,4 +75,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-11-04 14:10:57
+-- Dump completed on 2012-11-06 10:05:23
