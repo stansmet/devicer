@@ -39,12 +39,14 @@
       <li><button class="btn btn-info" type="button" id="addLocationBtn">Добавить локацию</button></li>
     </ul>
     
-    <div class="tab-content clearfix">
-      <div class="pull-left">
+    <div class="tab-content clearfix">      
+      <div class="pull-left">        
         <ul class="nav nav-list devices"> 
           <li class="nav-header">Оборудование (<span class="count">0</span>)</li>
         </ul>
-        <div class="clearfix"><button class="btn btn-info" type="button" id="addDeviceBtn">Добавить оборудование</button></div>
+        <div class="clearfix"><button class="btn btn-info" type="button" id="addDeviceBtn">Добавить оборудование</button>
+          <a href="#" class="historyBtn">история оборудования</a>
+        </div>
       </div>
     </div>
   </div>
@@ -84,6 +86,18 @@
       <button class="btn btn-success" type="submit" name="save">Сохранить</button>
       <button class="btn btn-danger" type="button" name="delete">Удалить</button>
     </form>
+  </div>
+
+  <div id="deviceHistory" class="hide">
+    <form action="" method="GET">
+      <span>от <input type="text" class="fromDate" name="fromDate" required /></span>
+      <span>до <input type="text" class="toDate" name="toDate" required /></span>
+      <button type="submit" class="btn btn-success filter" />фильтровать</button>
+    </form>
+    <table class="table">
+      <thead><tr><th>#</th><th>устройство</th><th>из локации</th><th>в локацию</th><th>событие</th><th>дата</th></tr></thead>
+      <tbody></tbody>
+    </table>
   </div>
 
 </body>

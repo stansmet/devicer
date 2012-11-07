@@ -150,7 +150,45 @@ $(function() {
         "resizable":false,
         "title":"Редактировать оборудование"
     });
+    $('#deviceHistory').dialog({
+        "autoOpen":false,
+        "draggable":false,
+        "modal":true,
+        "resizable":false,
+        "title":"История оборудования",
+        'width': '800px',
+        //'height': ''
+    });
 
+    $('.fromDate, .toDate').datepicker({
+        'dateFormat':'yy-mm-dd'
+    });
+
+    $('.historyBtn').click(function(e) {
+        e.preventDefault();
+        $('#deviceHistory tbody').empty();
+        $('#deviceHistory').dialog('open');
+    })
+
+    $('#deviceHistory form').on('submit', function(e) {
+        e.preventDefault();
+
+        var form = this;
+        $.ajax({
+            'url': '/api/v1/history',
+            'data': $(form).serialize(),
+            'type': 'GET',
+            'success': function(data) {
+                if (data.success) {
+                    $(data.data).each(function(idx, el) {
+                        $('#deviceHistory tbody').append('<tr><td>'+idx+'</td><td>'+el.device+'</td><td>'+el.location_from+'</td><td>'+el.location_to+'</td><td>'+el.event+'</td><td>'+el.fired_at+'</td></tr>');
+                    });
+                } else {
+                    $.stickr({note:data.message, className:'classic error', sticked:true});
+                }
+            }
+        });
+    })
 
     // create location popup
     $('#addLocationBtn').click(function(e) {

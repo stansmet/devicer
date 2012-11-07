@@ -26,3 +26,11 @@ body {
 .footer {
     text-align: center;
 }
+
+.fromDate .toDate {
+    width: 100px;
+}
+
+#deviceHistory .filter {
+    margin-top: -10px;
+}

@@ -88,6 +88,9 @@ $app->post('/api/v1/devices', function(Request $request) use($app) {
 
 // PUT DEVICE
 $app->put('/api/v1/devices/{id}', function(Request $request, $id) use($app) {
+    $id = addslashes($id);
+    $device = $app['dbh']->query("SELECT d.title AS device_title, d.num AS device_num, l.title AS location_title, l.address, d.location_id AS location_address FROM devices d INNER JOIN locations l ON d.location_id = l.id WHERE d.id = {$id}")->fetch(PDO::FETCH_ASSOC);
+
     $sth = $app['dbh']->prepare("UPDATE devices SET title = :title, num = :num, location_id = :location_id WHERE id = :id");
     $sth->execute(array(
         ':title' => $request->get('title'),
@@ -96,8 +99,20 @@ $app->put('/api/v1/devices/{id}', function(Request $request, $id) use($app) {
         ':id' => $id
     ));
 
-    $errors = $sth->errorInfo();
+    // location changed
+    if ($device['location_id'] !== (int)$request->get('location_id')) {
+        $newLocation = $app['dbh']->query("SELECT * FROM locations WHERE id = {$request->get('location_id')}")->fetch(PDO::FETCH_ASSOC);
 
+        $sth = $app['dbh']->prepare("INSERT INTO history(device, location_from, location_to, event) VALUES(:device, :location_from, :location_to, :event)");
+        $sth->execute(array(
+            ':device' => "{$device['device_title']}({$device['device_num']})",
+            ':location_from' => "{$device['location_title']}({$device['location_address']})",
+            ':location_to' => "{$newLocation['title']}({$newLocation['address']})",
+            ':event' => 'ПЕРЕМЕЩЕНО'
+        ));
+    }
+
+    $errors = $sth->errorInfo();
     $status = array(
         'success' => (int)$errors[0] === 0 ? true : false,
         'message' => $errors[2],
@@ -131,13 +146,22 @@ $app->put('/api/v1/locations/{id}', function(Request $request, $id) use($app) {
 
 // DELETE DEVICE
 $app->delete('/api/v1/devices/{id}', function(Request $request, $id) use($app) {
+    $id = addslashes($id);
+    $device = $app['dbh']->query("SELECT d.title AS device_title, d.num AS device_num, l.title AS location_title, l.address AS location_address FROM devices d INNER JOIN locations l ON d.location_id = l.id WHERE d.id = {$id}")->fetch(PDO::FETCH_ASSOC);
+
     $sth = $app['dbh']->prepare("DELETE FROM devices WHERE id = :id");
     $sth->execute(array(
         ':id' => $id
     ));
 
-    $errors = $sth->errorInfo();
+    $sth = $app['dbh']->prepare("INSERT INTO history(device, location_from, event) VALUES(:device, :location_from, :event)");
+    $sth->execute(array(
+        ':device' => "{$device['device_title']}({$device['device_num']})",
+        ':location_from' => "{$device['location_title']}({$device['location_address']})",
+        ':event' => 'УДАЛЕНО'
+    ));
 
+    $errors = $sth->errorInfo();
     $status = array(
         'success' => (int)$errors[0] === 0 ? true : false,
         'message' => $errors[2],
@@ -175,6 +199,25 @@ $app->get('/api/v1/devices', function(Request $request) use($app) {
     $filter = addslashes(mb_strtolower($request->get('filter'), 'UTF-8'));
     $sth = $app['dbh']->prepare("SELECT * FROM devices WHERE title LIKE '%{$filter}%' OR num LIKE '%{$filter}%'");
     $sth->execute(array());
+
+    $errors = $sth->errorInfo();
+    $status = array(
+        'success' => (int)$errors[0] === 0 ? true : false,
+        'message' => $errors[2],
+        'method' => 'GET',
+        'data' => $sth->fetchAll(PDO::FETCH_ASSOC)
+    );
+
+    return new JsonResponse($status);
+});
+
+// HISTORY
+$app->get('/api/v1/history', function(Request $request) use($app) {
+    $sth = $app['dbh']->prepare("SELECT * FROM history WHERE fired_at BETWEEN :from_date AND :to_date");
+    $sth->execute(array(
+        ':from_date' => $request->get('fromDate'),
+        ':to_date' => $request->get('toDate')
+    ));
 
     $errors = $sth->errorInfo();
     $status = array(
